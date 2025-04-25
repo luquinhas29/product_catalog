@@ -1,16 +1,19 @@
 package com.devlucaswilliams.productcatalog.servicies;
 
 import java.util.List;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devlucaswilliams.productcatalog.dto.CategoryDTO;
 import com.devlucaswilliams.productcatalog.entities.Category;
 import com.devlucaswilliams.productcatalog.repositories.CategoryRepository;
+import com.devlucaswilliams.productcatalog.servicies.exceptions.DatabaseException;
 import com.devlucaswilliams.productcatalog.servicies.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -55,4 +58,18 @@ public class CategoryService {
 		}
 		
 	}
+	
+	public void delete(Long id) {
+		if (!repository.existsById(id)) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		try {
+	        	repository.deleteById(id);    		
+		}
+	    	catch (DataIntegrityViolationException e) {
+	        	throw new DatabaseException("Falha de integridade referencial");
+	   	}
+	}
+
+	
 }
